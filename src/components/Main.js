@@ -1,24 +1,27 @@
 import React from 'react';
 import Card from "./Card";
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { CurrentCardContext } from "../contexts/CurrentCardContext";
 
-function Main({cards, user, onEditProfile, onEditAvatar, onAddPlace, onCardClick, onCardLike, onCardDelete}) {
-
+function Main({onEditProfile, onEditAvatar, onAddPlace, onCardClick, onCardLike, onCardDelete}) {
+    const currentUser = React.useContext(CurrentUserContext);
+    const currentCard = React.useContext(CurrentCardContext);
     return(
         <main className="content">
             <section className="profile">
                 <div className="profile__img" onClick={onEditAvatar}>
-                    <img src={user.avatar} alt="Аватар" className="profile__avatar" />
+                    <img src={currentUser.avatar} alt="Аватар" className="profile__avatar" />
                 </div>
                 <div className="profile__info">
                     <div className="profile__top">
-                        <h1 className="profile__title">{user.name}</h1>
+                        <h1 className="profile__title">{currentUser.name}</h1>
                         <button
                             className="profile__edit-btn"
                             onClick={onEditProfile}
                         >
                         </button>
                     </div>
-                    <p className="profile__subtitle">{user.about}</p>
+                    <p className="profile__subtitle">{currentUser.about}</p>
                 </div>
                 <button
                     className="profile__add-btn"
@@ -28,9 +31,9 @@ function Main({cards, user, onEditProfile, onEditAvatar, onAddPlace, onCardClick
             </section>
 
             <div className="cards">
-                {cards.map((card) => {
-                    const isOwn = card.owner._id === user._id;
-                    const isLiked = card.likes.some(i => i._id === user._id);
+                {currentCard.map((card) => {
+                    const isOwn = card.owner._id === currentUser._id;
+                    const isLiked = card.likes.some(i => i._id === currentUser._id);
 
                     return(
                         <Card

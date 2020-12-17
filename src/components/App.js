@@ -18,14 +18,14 @@ function App() {
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
     const [selectedCard, setSelectedCard] = React.useState(false);
-    const [currentUser, setCurrentUser] = React.useState([]);
-    const [currentCard, setCurrentCard] = React.useState([]);
+    const [currentUser, setCurrentUser] = React.useState({});
+    const [cards, setCards] = React.useState([]);
 
     React.useEffect(() => {
         Promise.all([api.getUserInfo(), api.getInitialCards()])
             .then(([getUserInfo, initialCards]) => {
                 setCurrentUser(getUserInfo);
-                setCurrentCard(initialCards);
+                setCards(initialCards);
             })
             .catch(() => {
                 console.log('Что-то пошло не так :(')
@@ -55,37 +55,52 @@ function App() {
 
         if (isLiked) {
             api.deleteLike(card, isLiked).then((newCard) => {
-                const newCards = currentCard.map((c) => c._id === card._id ? newCard : c);
-                setCurrentCard(newCards);
+                const newCards = cards.map((c) => c._id === card._id ? newCard : c);
+                setCards(newCards);
             })
+                .catch(() => {
+                    console.log('Что-то пошло не так :(')
+                })
         } else {
             api.addLike(card, !isLiked).then((newCard) => {
-                const newCards = currentCard.map((c) => c._id === card._id ? newCard : c);
-                setCurrentCard(newCards);
-            });
+                const newCards = cards.map((c) => c._id === card._id ? newCard : c);
+                setCards(newCards);
+            })
+                .catch(() => {
+                    console.log('Что-то пошло не так :(')
+                });
         }
 
     }
     function handleCardDelete(card) {
         api.deleteCard(card._id).then(() => {
-            const newCards = currentCard.filter((c) => c._id !== card._id);
+            const newCards = cards.filter((c) => c._id !== card._id);
 
-            setCurrentCard(newCards)
-        });
+            setCards(newCards)
+        })
+            .catch(() => {
+                console.log('Что-то пошло не так :(')
+            });
     }
     function handleUpdateUser(userInfo) {
         api.changeUserInfo(userInfo.name, userInfo.about).then((userInfo) => {
             setCurrentUser(userInfo)
+        }).catch(() => {
+            console.log('Что-то пошло не так :(')
         })
     }
     function handleUpdateAvatar(userAvatar) {
         api.changeUserAvatar(userAvatar.avatar).then((avatar) => {
             setCurrentUser(avatar)
+        }).catch(() => {
+            console.log('Что-то пошло не так :(')
         })
     }
-    function handleAddPlaceSubmit(cards) {
-        api.addNewCard(cards).then((newCard) => {
-            setCurrentCard([newCard, ...currentCard]);
+    function handleAddPlaceSubmit(card) {
+        api.addNewCard(card).then((newCard) => {
+            setCards([newCard, ...cards]);
+        }).catch(() => {
+            console.log('Что-то пошло не так :(')
         })
     }
 
@@ -93,10 +108,8 @@ function App() {
         <>
             <CurrentUserContext.Provider value={currentUser}>
                 <Header />
-                <CurrentCardContext.Provider value={currentCard}>
+                <CurrentCardContext.Provider value={cards}>
                     <Main
-                        cards={currentCard}
-                        user={currentUser}
                         onEditProfile={handleEditProfileClick}
                         onAddPlace={handleAddPlaceClick}
                         onEditAvatar={handleEditAvatarClick}
@@ -127,7 +140,6 @@ function App() {
                         <button
                             type="submit"
                             className="popup__save-btn popup__confirm-btn"
-                            onClick={closeAllPopups}
                         >
                             <span>
                                 Да

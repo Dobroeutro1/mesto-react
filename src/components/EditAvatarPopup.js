@@ -6,6 +6,8 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
     function handleSubmit(e) {
         e.preventDefault();
 
+        onClose();
+
         onUpdateAvatar({
             avatar: userAvatarRef.current.value
         });
@@ -37,7 +39,6 @@ function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
                 <button
                     type="submit"
                     className="popup__save-btn popup__save-profile"
-                    onClick={onClose}
                 >
                             <span>
                                 Сохранить

@@ -17,6 +17,8 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser}) {
         // Запрещаем браузеру переходить по адресу формы
         e.preventDefault();
 
+        onClose();
+
         // Передаём значения управляемых компонентов во внешний обработчик
         onUpdateUser({
             name,
@@ -72,7 +74,6 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser}) {
                 <button
                     type="submit"
                     className="popup__save-btn popup__save-profile"
-                    onClick={onClose}
                 >
                     <span>Сохранить</span>
                 </button>
